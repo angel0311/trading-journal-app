@@ -1,10 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import TradeForm from '../views/TradeForm.vue'
 import TradeList from '../views/TradeList.vue'
 
 const routes = [
   {
     path: '/',
+    name: 'home',
+    component: HomeView
+  },
+  {
+    path: '/trades',
     name: 'tradeList',
     component: TradeList
   },
