@@ -5,24 +5,29 @@
     <table class="table">
       <thead class="thead-light">
         <tr>
+          <th class="icon-col">Type</th>
           <th>Symbol</th>
           <th>Contract</th>
-          <th>Type</th>
           <th class="text-right">Initial Price</th>
           <th class="text-right">Final Price</th>
           <th>Date Opened</th>
+          <th>Date Closed</th>
           <th>Outcome</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="trade in trades" :key="trade._id">
+          <td class="icon-col">
+            <img v-if="trade.tradeType === 'long'" :src="bullIcon" alt="Long trade" class="trade-icon" :class="{ 'closed-trade-icon': trade.finalDateTime }">
+            <img v-else-if="trade.tradeType === 'short'" :src="bearIcon" alt="Short trade" class="trade-icon" :class="{ 'closed-trade-icon': trade.finalDateTime }">
+          </td>
           <td>{{ trade.symbol }}</td>
           <td>{{ trade.futureContract }}</td>
-          <td class="trade-type" :class="trade.tradeType">{{ trade.tradeType }}</td>
           <td class="text-right">{{ formatCurrency(trade.initialPrice) }}</td>
           <td class="text-right">{{ formatCurrency(trade.finalPrice) }}</td>
           <td>{{ new Date(trade.initialDateTime).toLocaleString() }}</td>
+          <td>{{ trade.finalDateTime ? new Date(trade.finalDateTime).toLocaleString() : '' }}</td>
           <td>{{ trade.outcome }}</td>
           <td>
             <button @click="deleteTrade(trade._id)" class="btn btn-danger btn-sm">Delete</button>
@@ -35,6 +40,8 @@
 
 <script>
 import axios from 'axios';
+import bullIcon from '@/assets/bull.png';
+import bearIcon from '@/assets/bear.png';
 
 export default {
   name: 'TradeList',
@@ -42,7 +49,9 @@ export default {
     return {
       trades: [],
       statusMessage: '',
-      statusType: ''
+      statusType: '',
+      bullIcon,
+      bearIcon,
     };
   },
   mounted() {
@@ -137,17 +146,20 @@ export default {
   text-align: right !important;
 }
 
-.trade-type {
-  text-transform: capitalize;
-  font-weight: bold;
+.icon-col {
+  width: 40px;
+  padding: 8px;
 }
 
-.long {
-  color: #27ae60; /* Green */
+.trade-icon {
+  width: 24px;
+  height: 24px;
 }
 
-.short {
-  color: #e74c3c; /* Red */
+.closed-trade-icon {
+  filter: grayscale(100%);
+  opacity: 0.6;
 }
+
 
 </style>
