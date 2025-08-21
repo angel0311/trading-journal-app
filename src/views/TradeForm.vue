@@ -70,11 +70,13 @@
           <label for="motivation">Motivation to Enter Trade</label>
           <textarea id="motivation" v-model="trade.motivation" rows="4"></textarea>
         </div>
-        <div class="form-group">
+        <div class="form-group form-group--row">
             <label>Order Types:</label>
-            <div class="checkbox-group">
-                <input type="checkbox" id="limitOrder" v-model="trade.limitOrder">
-                <label for="limitOrder">Limit Order</label>
+            <div class="order-types-container">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="limitOrder" v-model="trade.limitOrder">
+                    <label for="limitOrder">Limit Order</label>
+                </div>
             </div>
         </div>
       </fieldset>
@@ -95,15 +97,17 @@
           <label for="outcome">How The Trade Went</label>
           <textarea id="outcome" v-model="trade.outcome" rows="4"></textarea>
         </div>
-        <div class="form-group">
+        <div class="form-group form-group--row">
             <label>Order Types:</label>
-            <div class="checkbox-group">
-                <input type="checkbox" id="stopOrder" v-model="trade.stopOrder">
-                <label for="stopOrder">Stop Order</label>
-            </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="targetOrder" v-model="trade.targetOrder">
-                <label for="targetOrder">Target Order</label>
+            <div class="order-types-container">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="stopOrder" v-model="trade.stopOrder">
+                    <label for="stopOrder">Stop Order</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="targetOrder" v-model="trade.targetOrder">
+                    <label for="targetOrder">Target Order</label>
+                </div>
             </div>
         </div>        
       </fieldset>
@@ -220,6 +224,16 @@ legend {
   flex-direction: column;
 }
 
+.form-group--row {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-group--row > label {
+  margin-bottom: 0;
+}
+
 label {
   margin-bottom: 8px;
   font-weight: 500;
@@ -272,6 +286,11 @@ textarea {
 .order-types {
   flex-direction: row;
   align-items: center;
+  gap: 20px;
+}
+
+.order-types-container {
+  display: flex;
   gap: 20px;
 }
 
