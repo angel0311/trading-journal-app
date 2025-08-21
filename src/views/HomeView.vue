@@ -1,13 +1,13 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" style="width: 240px; margin-bottom: 20px;">
-    <h1>Welcome to Your Trading Journal App</h1>
+    <img alt="Trading Journal App Logo" src="../assets/logo.png" style="width: 240px; margin-bottom: 20px;">
+    <h1>Trading Journal App</h1>
     <p>
       Use this app to log, review, and analyze your trades.
     </p>
     <div class="actions">
-      <router-link to="/trades" class="btn btn-secondary">View Trades</router-link>
-      <router-link to="/add" class="btn btn-primary">Add New Trade</router-link>
+      <router-link to="/trades" class="btn btn-primary">view trades</router-link>
+      <router-link to="/add" class="btn btn-primary">add new trades</router-link>
     </div>
   </div>
 </template>
@@ -26,40 +26,5 @@ export default {
 
 .actions {
   margin-top: 25px;
-}
-
-.btn {
-  display: inline-block;
-  padding: 12px 24px;
-  margin: 0 10px;
-  border: none;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-.btn-primary {
-  background-color: #3BA0AD; /* Specific teal/cyan from the Vue logo */
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #318894; /* A slightly darker shade for hover */
-}
-
-.btn-secondary {
-  background-color: #35495e; /* Vue's dark blue/gray color */
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #2c3e50; /* A slightly darker shade for hover */
 }
 </style>
