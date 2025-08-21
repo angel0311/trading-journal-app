@@ -30,6 +30,12 @@
 
       <fieldset>
         <legend>Trade Parameters</legend>
+        <div v-if="trade.tradeType === 'long'" class="trade-icon">
+            <img :src="bullIcon" alt="Bull market icon">
+        </div>
+        <div v-if="trade.tradeType === 'short'" class="trade-icon">
+            <img :src="bearIcon" alt="Bear market icon">
+        </div>
          <div class="form-grid">
             <div class="form-group">
                 <label for="strategy">Strategy</label>
@@ -50,7 +56,7 @@
         </div>
         <div class="form-group">
             <label for="investment">Investment ($)</label>
-            <input id="investment" type="number" step="0.01" v-model="trade.investment" placeholder="e.g., 2,153.00">
+            <input id="investment" type="number" step="100" v-model="trade.investment" placeholder="e.g., 2,100.00">
         </div>
       </fieldset>
 
@@ -67,7 +73,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="motivation">Motivation to enter trade</label>
+          <label for="motivation">Motivation to Enter Trade</label>
           <textarea id="motivation" v-model="trade.motivation" rows="4"></textarea>
         </div>
         <div class="form-group form-group--row">
@@ -94,7 +100,7 @@
           </div>
       </div>
         <div class="form-group">
-          <label for="outcome">How the trade went</label>
+          <label for="outcome">How The Trade Went</label>
           <textarea id="outcome" v-model="trade.outcome" rows="4"></textarea>
         </div>
         <div class="form-group form-group--row">
@@ -122,12 +128,17 @@
 
 <script>
 import axios from 'axios';
+import bullIcon from '@/assets/bull.png';
+import bearIcon from '@/assets/bear.png';
 
 export default {
   name: 'TradeForm',
   data() {
     return {
       trade: this.getInitialTradeObject(),
+      // Make icons available to the template
+      bullIcon,
+      bearIcon,
       statusMessage: '',
       statusType: ''
     };
@@ -166,7 +177,7 @@ export default {
         const numberValue = parseFloat(cleanedValue);
         this.trade.finalPrice = isNaN(numberValue) ? null : numberValue;
       }
-    }
+    },
   },
   methods: {
     getInitialTradeObject() {
@@ -243,6 +254,7 @@ fieldset {
   border-radius: 5px;
   padding: 20px;
   margin-bottom: 20px;
+  position: relative; /* For icon positioning */
 }
 
 legend {
@@ -350,6 +362,21 @@ textarea {
 .order-types-container {
   display: flex;
   gap: 20px;
+}
+
+.trade-icon {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  opacity: 0.5;
+}
+
+.trade-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .checkbox-group {
