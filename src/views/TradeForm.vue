@@ -52,25 +52,10 @@
             <label for="investment">Investment ($)</label>
             <input id="investment" type="number" step="0.01" v-model="trade.investment" placeholder="e.g., 1000.00">
         </div>
-        <div class="form-group order-types">
-            <label>Order Types:</label>
-            <div class="checkbox-group">
-                <input type="checkbox" id="limitOrder" v-model="trade.limitOrder">
-                <label for="limitOrder">Limit Order</label>
-            </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="stopOrder" v-model="trade.stopOrder">
-                <label for="stopOrder">Stop Order</label>
-            </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="targetOrder" v-model="trade.targetOrder">
-                <label for="targetOrder">Target Order</label>
-            </div>
-        </div>
       </fieldset>
 
       <fieldset>
-        <legend>Execution</legend>
+        <legend>Entry</legend>
         <div class="form-grid">
           <div class="form-group">
             <label for="initialPrice">Initial Price</label>
@@ -81,6 +66,21 @@
             <input id="initialDateTime" type="datetime-local" v-model="trade.initialDateTime" required>
           </div>
         </div>
+        <div class="form-group">
+          <label for="motivation">Motivation to Enter Trade</label>
+          <textarea id="motivation" v-model="trade.motivation" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Order Types:</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="limitOrder" v-model="trade.limitOrder">
+                <label for="limitOrder">Limit Order</label>
+            </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Exit</legend>
         <div class="form-grid">
           <div class="form-group">
             <label for="finalPrice">Final Price</label>
@@ -90,19 +90,22 @@
             <label for="finalDateTime">Final Date & Time</label>
             <input id="finalDateTime" type="datetime-local" v-model="trade.finalDateTime">
           </div>
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Notes</legend>
-        <div class="form-group">
-          <label for="motivation">Motivation to Enter Trade</label>
-          <textarea id="motivation" v-model="trade.motivation" rows="4"></textarea>
-        </div>
+      </div>
         <div class="form-group">
           <label for="outcome">How The Trade Went</label>
           <textarea id="outcome" v-model="trade.outcome" rows="4"></textarea>
         </div>
+        <div class="form-group">
+            <label>Order Types:</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="stopOrder" v-model="trade.stopOrder">
+                <label for="stopOrder">Stop Order</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="targetOrder" v-model="trade.targetOrder">
+                <label for="targetOrder">Target Order</label>
+            </div>
+        </div>        
       </fieldset>
 
       <div class="form-actions">
