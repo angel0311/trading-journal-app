@@ -50,7 +50,7 @@
         </div>
         <div class="form-group">
             <label for="investment">Investment ($)</label>
-            <input id="investment" type="number" step="0.01" v-model="trade.investment" placeholder="e.g., 1000.00">
+            <input id="investment" type="number" step="0.01" v-model="trade.investment" placeholder="e.g., 2,153.00">
         </div>
       </fieldset>
 
@@ -58,16 +58,16 @@
         <legend>Entry</legend>
         <div class="form-grid">
           <div class="form-group">
-            <label for="initialPrice">Initial Price</label>
-            <input id="initialPrice" type="number" step="any" v-model="trade.initialPrice" required placeholder="e.g., 2.153">
+            <label for="initialPrice">Entry Price</label>
+            <input id="initialPrice" type="text" v-model="formattedInitialPrice" required placeholder="e.g., 2,153.00">
           </div>
           <div class="form-group">
-            <label for="initialDateTime">Initial Date & Time</label>
+            <label for="initialDateTime">Entry Date & Time</label>
             <input id="initialDateTime" type="datetime-local" v-model="trade.initialDateTime" required>
           </div>
         </div>
         <div class="form-group">
-          <label for="motivation">Motivation to Enter Trade</label>
+          <label for="motivation">Motivation to enter trade</label>
           <textarea id="motivation" v-model="trade.motivation" rows="4"></textarea>
         </div>
         <div class="form-group form-group--row">
@@ -85,16 +85,16 @@
         <legend>Exit</legend>
         <div class="form-grid">
           <div class="form-group">
-            <label for="finalPrice">Final Price</label>
-            <input id="finalPrice" type="number" step="any" v-model="trade.finalPrice" placeholder="e.g., 2.135">
+            <label for="finalPrice">Exit Price</label>
+            <input id="finalPrice" type="text" v-model="formattedFinalPrice" placeholder="e.g., 2,135.00">
           </div>
           <div class="form-group">
-            <label for="finalDateTime">Final Date & Time</label>
+            <label for="finalDateTime">Exit Date & Time</label>
             <input id="finalDateTime" type="datetime-local" v-model="trade.finalDateTime">
           </div>
       </div>
         <div class="form-group">
-          <label for="outcome">How The Trade Went</label>
+          <label for="outcome">How the trade went</label>
           <textarea id="outcome" v-model="trade.outcome" rows="4"></textarea>
         </div>
         <div class="form-group form-group--row">
@@ -113,6 +113,7 @@
       </fieldset>
 
       <div class="form-actions">
+        <button type="button" @click="resetForm" class="btn btn-secondary">Clear Form</button>
         <button type="submit" class="btn btn-primary">Log Trade</button>
       </div>
     </form>
@@ -130,6 +131,42 @@ export default {
       statusMessage: '',
       statusType: ''
     };
+  },
+  computed: {
+    formattedInitialPrice: {
+      get() {
+        if (this.trade.initialPrice === null || typeof this.trade.initialPrice === 'undefined') {
+          return '';
+        }
+        return this.trade.initialPrice.toLocaleString('en-US', { maximumFractionDigits: 5 });
+      },
+      set(newValue) {
+        if (!newValue) {
+          this.trade.initialPrice = null;
+          return;
+        }
+        const cleanedValue = String(newValue).replace(/,/g, '');
+        const numberValue = parseFloat(cleanedValue);
+        this.trade.initialPrice = isNaN(numberValue) ? null : numberValue;
+      }
+    },
+    formattedFinalPrice: {
+      get() {
+        if (this.trade.finalPrice === null || typeof this.trade.finalPrice === 'undefined') {
+          return '';
+        }
+        return this.trade.finalPrice.toLocaleString('en-US', { maximumFractionDigits: 5 });
+      },
+      set(newValue) {
+        if (!newValue) {
+          this.trade.finalPrice = null;
+          return;
+        }
+        const cleanedValue = String(newValue).replace(/,/g, '');
+        const numberValue = parseFloat(cleanedValue);
+        this.trade.finalPrice = isNaN(numberValue) ? null : numberValue;
+      }
+    }
   },
   methods: {
     getInitialTradeObject() {
@@ -154,6 +191,8 @@ export default {
     },
     resetForm() {
       this.trade = this.getInitialTradeObject();
+      this.statusMessage = '';
+      this.statusType = '';
     },
     submitTrade() {
       this.statusMessage = '';
@@ -275,12 +314,31 @@ textarea {
 }
 
 .form-actions {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
   margin-top: 20px;
 }
 
 .btn {
   padding: 12px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b60;
 }
 
 .order-types {
@@ -297,6 +355,15 @@ textarea {
 .checkbox-group {
   display: flex;
   align-items: center;
+}
+
+.checkbox-group input {
+  margin-right: 8px;
+}
+
+.checkbox-group > label {
+  margin-bottom: 0;
+  font-weight: normal;
 }
 
 .status-message {
@@ -318,13 +385,32 @@ textarea {
   border: 1px solid #f5c6cb;
 }
 
-.checkbox-group input {
-  margin-right: 8px;
-}
-
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .form-container {
+    margin: 20px auto;
+    padding: 10px;
+  }
+
+  .trade-form-card {
+    padding: 20px;
+  }
+
+  .form-group--row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .form-actions .btn {
+    width: 100%;
   }
 }
 </style>
