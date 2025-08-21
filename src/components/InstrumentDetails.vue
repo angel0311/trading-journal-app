@@ -1,24 +1,24 @@
 <template>
   <fieldset>
     <legend>Instrument Details</legend>
-    <div class="form-grid">
+    <div class="instrument-details-grid">
       <div class="form-group">
         <label for="symbol">Symbol</label>
-        <input id="symbol" type="text" :value="symbol" @input="$emit('update:symbol', $event.target.value)" required placeholder="e.g., RBU24">
+        <input id="symbol" type="text" :value="symbol" @input="$emit('update:symbol', $event.target.value)" required placeholder="e.g., GCM5">
       </div>
-      <div class="form-group">
-        <label for="futureContract">Future Contract</label>
-        <input id="futureContract" type="text" :value="futureContract" placeholder="Auto-filled from Symbol" readonly>
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="expirationDate">Expiration Date</label>
-        <input id="expirationDate" type="date" :value="expirationDate" readonly>
-      </div>
-      <div class="form-group">
-        <label for="timeToStopTrading">Time to stop trading</label>
-        <input id="timeToStopTrading" type="text" :value="timeRemainingDisplay" placeholder="Auto-filled from Symbol" readonly>
+      <div class="details-display">
+        <div class="detail-item">
+          <strong>Future Contract</strong>
+          <span>{{ futureContract || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <strong>Expiration Date</strong>
+          <span>{{ expirationDate || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <strong>Time Remaining</strong>
+          <span>{{ timeRemainingDisplay || 'N/A' }}</span>
+        </div>
       </div>
     </div>
   </fieldset>
@@ -46,6 +46,7 @@ export default {
         return '';
       }
 
+      
       const [year, month, day] = this.timeToStopTrading.split('-').map(Number);
       // Creates a date at midnight in the user's local timezone.
       const stopDate = new Date(year, month - 1, day);
@@ -55,14 +56,12 @@ export default {
       // The currentTime dependency makes this re-evaluate when the interval fires.
       const diff = stopDate.getTime() - this.currentTime.getTime();
 
-      if (diff <= 0) {
-        return 'Expired';
-      }
+      if (diff <= 0) return 'Expired';
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-      return `${days}d ${hours}h remaining`;
+      return `${days}d ${hours}h`;
     }
   },
   mounted() {
@@ -92,14 +91,35 @@ legend {
   color: #35495e;
 }
 
-.form-grid {
+.instrument-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  align-items: center;
+}
+
+.details-display {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  padding-left: 20px;
+  border-left: 1px solid #ddd;
+}
+
+.detail-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.detail-item strong {
+  width: 120px; /* Ensures values are aligned */
+  font-weight: 500;
+  color: #555;
 }
 
 .form-group {
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
 }
