@@ -1,6 +1,8 @@
 <template>
   <div>
     <h3>Add New Trade</h3>
+    <div v-if="statusMessage" :class="statusType" class="status-message">{{ statusMessage }}</div>
+
     <form @submit.prevent="addTrade">
       <div class="form-group">
         <label>Symbol Traded:</label>
@@ -61,19 +63,41 @@ export default {
         dateBought: '',
         dateSold: '',
         commentBuyReason: '',
-        commentTradeOutcome: ''
-      }
+        commentTradeOutcome: '',
+      },
+      statusMessage: '',
+      statusType: ''
     };
   },
   methods: {
+    resetForm() {
+      this.trade = {
+        symbolTraded: '',
+        futureContractName: '',
+        contractExpiration: '',
+        priceBought: null,
+        priceSold: null,
+        dateBought: '',
+        dateSold: '',
+        commentBuyReason: '',
+        commentTradeOutcome: ''
+      };
+    },
     addTrade() {
+      this.statusMessage = '';
       axios.post('http://localhost:5000/trades/add', this.trade)
         .then(res => {
           console.log(res.data);
-          this.$router.push('/');
+          this.statusMessage = 'Trade logged successfully!';
+          this.statusType = 'success';
+          this.resetForm();
+          // Redirect to the trades list to see the new entry after a delay
+          setTimeout(() => this.$router.push('/trades'), 2000);
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
+          this.statusMessage = 'Error logging trade. Please check the details and try again.';
+          this.statusType = 'error';
         });
     }
   }
@@ -83,5 +107,24 @@ export default {
 <style scoped>
 .form-group {
   margin-bottom: 15px;
+}
+
+.status-message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 </style>
