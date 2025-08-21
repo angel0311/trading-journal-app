@@ -6,7 +6,6 @@
 
       <instrument-details
         v-model:symbol="trade.symbol"
-        :instrument-description="trade.instrumentDescription"
         :future-contract="trade.futureContract"
         :expiration-date="trade.expirationDate"
         :time-to-stop-trading="trade.timeToStopTrading"
@@ -49,13 +48,7 @@
         <div class="form-grid">
           <div class="form-group">
             <label for="initialPrice">Entry Price</label>
-            <div class="price-input-group">
-              <input id="initialPrice" type="text" v-model="formattedInitialPrice" required placeholder="e.g., 185.50">
-              <button type="button" @click="fetchAndSetInitialPrice" :disabled="isFetchingPrice" class="btn btn-fetch">
-                <span v-if="isFetchingPrice">...</span>
-                <span v-else>Fetch</span>
-              </button>
-            </div>
+            <input id="initialPrice" type="text" v-model="formattedInitialPrice" required placeholder="e.g., 2,153.00">
           </div>
           <div class="form-group">
             <label for="initialDateTime">Entry Date & Time</label>
@@ -122,7 +115,6 @@ import bullIcon from '@/assets/bull.png';
 import bearIcon from '@/assets/bear.png';
 import InstrumentDetails from '@/components/InstrumentDetails.vue';
 import { parseSymbol } from '@/utils/futuresSymbolParser.js';
-import { fetchMarketPrice } from '@/utils/marketDataService.js';
 
 export default {
   name: 'TradeForm',
@@ -136,26 +128,23 @@ export default {
       bullIcon,
       bearIcon,
       statusMessage: '',
-      statusType: '',
-      isFetchingPrice: false,
+      statusType: ''
     };
   },
   watch: {
     'trade.symbol'(newSymbol) {
-      // Always clear previous derived data when the symbol changes
-      this.trade.
-      this.trade.futureContract = '';
-      this.trade.expirationDate = '';
-      this.trade.timeToStopTrading = '';
-
-      if (newSymbol) {
+      if (newSymbol && newSymbol.length >= 4) {
         const parsed = parseSymbol(newSymbol.toUpperCase());
         if (parsed) {
-          // It's a future, so populate the details
           this.trade.futureContract = parsed.contract;
           this.trade.expirationDate = parsed.expirationDate;
           this.trade.timeToStopTrading = parsed.timeToStopTrading;
         }
+      } else {
+        // Clear derived fields if symbol is invalid or cleared
+        this.trade.futureContract = '';
+        this.trade.expirationDate = '';
+        this.trade.timeToStopTrading = '';
       }
     }
   },
