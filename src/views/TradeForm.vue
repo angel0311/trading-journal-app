@@ -4,29 +4,12 @@
       <h3>Add New Trade</h3>
       <div v-if="statusMessage" :class="statusType" class="status-message">{{ statusMessage }}</div>
 
-      <fieldset>
-        <legend>Instrument Details</legend>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="symbol">Symbol</label>
-            <input id="symbol" type="text" v-model="trade.symbol" required placeholder="e.g., RBU5">
-          </div>
-          <div class="form-group">
-            <label for="futureContract">Future Contract</label>
-            <input id="futureContract" type="text" v-model="trade.futureContract" required placeholder="e.g., RBOB Gasoline">
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="expirationDate">Expiration Date</label>
-            <input id="expirationDate" type="date" v-model="trade.expirationDate" required>
-          </div>
-          <div class="form-group">
-            <label for="timeToStopTrading">Time to Stop Trading</label>
-            <input id="timeToStopTrading" type="text" v-model="trade.timeToStopTrading" placeholder="e.g., 3h 15m">
-          </div>
-        </div>
-      </fieldset>
+      <instrument-details
+        v-model:symbol="trade.symbol"
+        :future-contract="trade.futureContract"
+        :expiration-date="trade.expirationDate"
+        :time-to-stop-trading="trade.timeToStopTrading"
+      />
 
       <fieldset>
         <legend>Trade Parameters</legend>
@@ -130,9 +113,14 @@
 import axios from 'axios';
 import bullIcon from '@/assets/bull.png';
 import bearIcon from '@/assets/bear.png';
+import InstrumentDetails from '@/components/InstrumentDetails.vue';
+import { parseSymbol } from '@/utils/futuresSymbolParser.js';
 
 export default {
   name: 'TradeForm',
+  components: {
+    InstrumentDetails,
+  },
   data() {
     return {
       trade: this.getInitialTradeObject(),
@@ -142,6 +130,23 @@ export default {
       statusMessage: '',
       statusType: ''
     };
+  },
+  watch: {
+    'trade.symbol'(newSymbol) {
+      if (newSymbol && newSymbol.length >= 4) {
+        const parsed = parseSymbol(newSymbol.toUpperCase());
+        if (parsed) {
+          this.trade.futureContract = parsed.contract;
+          this.trade.expirationDate = parsed.expirationDate;
+          this.trade.timeToStopTrading = parsed.timeToStopTrading;
+        }
+      } else {
+        // Clear derived fields if symbol is invalid or cleared
+        this.trade.futureContract = '';
+        this.trade.expirationDate = '';
+        this.trade.timeToStopTrading = '';
+      }
+    }
   },
   computed: {
     formattedInitialPrice: {
