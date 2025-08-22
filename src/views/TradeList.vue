@@ -19,8 +19,8 @@
       <tbody>
         <tr v-for="trade in trades" :key="trade._id">
           <td class="icon-col">
-            <img v-if="trade.tradeType === 'long'" :src="bullIcon" alt="Long trade" class="trade-icon" :class="{ 'closed-trade-icon': trade.finalDateTime }">
-            <img v-else-if="trade.tradeType === 'short'" :src="bearIcon" alt="Short trade" class="trade-icon" :class="{ 'closed-trade-icon': trade.finalDateTime }">
+            <img v-if="trade.tradeType === 'long'" :src="bullIcon" alt="Long trade" class="trade-icon">
+            <img v-else-if="trade.tradeType === 'short'" :src="bearIcon" alt="Short trade" class="trade-icon">
           </td>
           <td>{{ trade.symbol }}</td>
           <td>{{ trade.futureContract }}</td>
@@ -30,7 +30,10 @@
           <td>{{ trade.finalDateTime ? new Date(trade.finalDateTime).toLocaleString() : '' }}</td>
           <td>{{ trade.outcome }}</td>
           <td>
-            <button @click="deleteTrade(trade._id)" class="btn btn-danger btn-sm">Delete</button>
+            <div class="actions-cell">
+              <button @click="editTrade(trade._id)" class="btn btn-primary btn-sm">Edit</button>
+              <button @click="deleteTrade(trade._id)" class="btn btn-danger btn-sm">Delete</button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -58,6 +61,9 @@ export default {
     this.fetchTrades();
   },
   methods: {
+    editTrade(id) {
+      this.$router.push(`/edit/${id}`);
+    },
     formatCurrency(value) {
       if (value === null || value === undefined) return '';
       return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -155,11 +161,5 @@ export default {
   width: 24px;
   height: 24px;
 }
-
-.closed-trade-icon {
-  filter: grayscale(100%);
-  opacity: 0.6;
-}
-
 
 </style>

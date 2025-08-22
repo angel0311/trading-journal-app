@@ -1,7 +1,7 @@
 <template>
   <div class="form-container">
     <form @submit.prevent="submitTrade" class="trade-form-card">
-      <h3>Add New Trade</h3>
+      <h3>{{ isEditMode ? 'Edit Trade' : 'Add New Trade' }}</h3>
       <div v-if="statusMessage" :class="statusType" class="status-message">{{ statusMessage }}</div>
 
       <instrument-details
@@ -102,8 +102,8 @@
       </fieldset>
 
       <div class="form-actions">
-        <button type="button" @click="resetForm" class="btn btn-secondary">Clear Form</button>
-        <button type="submit" class="btn btn-primary">Log Trade</button>
+        <button type="button" @click="handleCancel" class="btn btn-secondary">{{ isEditMode ? 'Cancel' : 'Clear Form' }}</button>
+        <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update Trade' : 'Log Trade' }}</button>
       </div>
     </form>
   </div>
@@ -128,8 +128,16 @@ export default {
       bullIcon,
       bearIcon,
       statusMessage: '',
-      statusType: ''
+      statusType: '',
+      tradeId: null,
     };
+  },
+  created() {
+    const id = this.$route.params.id;
+    if (id) {
+      this.tradeId = id;
+      this.fetchTradeData(id);
+    }
   },
   watch: {
     'trade.symbol'(newSymbol) {
@@ -149,6 +157,9 @@ export default {
     }
   },
   computed: {
+    isEditMode() {
+      return !!this.tradeId;
+    },
     formattedInitialPrice: {
       get() {
         if (this.trade.initialPrice === null || typeof this.trade.initialPrice === 'undefined') {
@@ -185,6 +196,13 @@ export default {
     },
   },
   methods: {
+    formatDateTimeForInput(dateTimeString) {
+      if (!dateTimeString) return '';
+      const date = new Date(dateTimeString);
+      // The toISOString() method returns a string in simplified extended ISO format (ISO 8601).
+      // We need to slice it to match the 'datetime-local' input format (YYYY-MM-DDTHH:mm).
+      return date.toISOString().slice(0, 16);
+    },
     getInitialTradeObject() {
         return {
             symbol: '',
@@ -206,26 +224,50 @@ export default {
         };
     },
     resetForm() {
-      this.trade = this.getInitialTradeObject();
+      this.trade = this.getInitialTradeObject(); // This is correct for 'add' mode
       this.statusMessage = '';
       this.statusType = '';
     },
-    submitTrade() {
-      this.statusMessage = '';
-      axios.post('http://localhost:5000/trades/add', this.trade)
-        .then(res => {
-          console.log(res.data);
-          this.statusMessage = 'Trade logged successfully!';
-          this.statusType = 'success';
-          this.resetForm();
-          // Redirect to the trades list to see the new entry after a delay
-          setTimeout(() => this.$router.push('/trades'), 2000);
+    handleCancel() {
+      if (this.isEditMode) this.$router.push('/trades');
+      else this.resetForm();
+    },
+    fetchTradeData(id) {
+      axios.get(`http://localhost:5000/trades/edit/${id}`)
+        .then(response => {
+          const tradeData = response.data;
+          // Format dates for the datetime-local input fields
+          tradeData.initialDateTime = this.formatDateTimeForInput(tradeData.initialDateTime);
+          tradeData.finalDateTime = this.formatDateTimeForInput(tradeData.finalDateTime);
+          this.trade = tradeData;
         })
         .catch(err => {
-          console.error(err);
-          this.statusMessage = 'Error logging trade. Please check the details and try again.';
+          console.error('Error fetching trade data:', err);
+          this.statusMessage = 'Could not load trade data. Please try again later.';
           this.statusType = 'error';
         });
+    },
+    submitTrade() {
+      this.statusMessage = '';
+      const apiCall = this.isEditMode
+        ? axios.post(`http://localhost:5000/trades/update/${this.tradeId}`, this.trade)
+        : axios.post('http://localhost:5000/trades/add', this.trade);
+
+      apiCall.then(res => {
+        console.log(res.data);
+        this.statusMessage = `Trade ${this.isEditMode ? 'updated' : 'logged'} successfully!`;
+        this.statusType = 'success';
+        if (!this.isEditMode) {
+          this.resetForm();
+        }
+        // Redirect to the trades list after a delay
+        setTimeout(() => this.$router.push('/trades'), 2000);
+      })
+      .catch(err => {
+        console.error(`Error ${this.isEditMode ? 'updating' : 'logging'} trade:`, err);
+        this.statusMessage = `Error ${this.isEditMode ? 'updating' : 'logging'} trade. Please check the details and try again.`;
+        this.statusType = 'error';
+      });
     }
   }
 };

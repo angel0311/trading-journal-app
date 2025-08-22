@@ -20,7 +20,12 @@ const routes = [
     name: 'addTrade',
     component: TradeForm
   },
-    {
+  {
+    path: '/edit/:id',
+    name: 'edit',
+    component: TradeForm
+  },
+  {
     path: '/about',
     name: 'aboutView',
     component: AboutView
